@@ -17,7 +17,8 @@
     "react-devtools-core": "^4.24.7",
     "react-native": "^0.69.1",
     "react-native-date-picker": "^4.2.2",
-    "react-native-eject": "^0.1.2"
+    "react-native-eject": "^0.1.2",
+    "react-native-splash-screen": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

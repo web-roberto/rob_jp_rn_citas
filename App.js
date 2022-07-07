@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import {
   SafeAreaView,
   View, 
@@ -9,9 +9,11 @@ import {
   FlatList,
   Alert
 } from 'react-native'
+import SplashScreen from 'react-native-splash-screen'
 import Formulario from './src/components/Formulario'
 import Paciente from './src/components/Paciente';
 import InformacionPaciente from './src/components/InformacionPaciente';
+
 
 const App = () => {
 
@@ -19,6 +21,7 @@ const App = () => {
   const [pacientes, setPacientes] = useState([])
   const [paciente, setPaciente] = useState({})
   const [modalPaciente, setModalPaciente] = useState(false)
+
 
   const pacienteEditar = id => {
     const pacienteEditar = pacientes.filter(paciente => paciente.id === id )
@@ -42,6 +45,10 @@ const App = () => {
   const cerrarModal = () => {
     setModalVisible(false)
   }
+
+  useEffect(() => {
+    SplashScreen.hide();
+ },[])
 
   return (
     <SafeAreaView style={styles.container}>
