@@ -1,63 +1,148 @@
-
-import React,{useState} from 'react';
-//import type {Node} from 'react';
+import React, { useState } from 'react'
 import {
   SafeAreaView,
-  StyleSheet,
+  View, 
   Text,
+  StyleSheet,
+  Pressable,
   Modal,
-  View,
-  Pressable} from 'react-native';
-  import Formulario from './src/components/Formulario';
+  FlatList,
+  Alert
+} from 'react-native'
+import Formulario from './src/components/Formulario'
+import Paciente from './src/components/Paciente';
+import InformacionPaciente from './src/components/InformacionPaciente';
 
 const App = () => {
-const [modalVisible, setModalVisible] = useState(false)
 
-  const newAppointmentHandler=()=>{setModalVisible(true)}
+  const [modalVisible, setModalVisible] = useState(false)
+  const [pacientes, setPacientes] = useState([])
+  const [paciente, setPaciente] = useState({})
+  const [modalPaciente, setModalPaciente] = useState(false)
+
+  const pacienteEditar = id => {
+    const pacienteEditar = pacientes.filter(paciente => paciente.id === id )
+    setPaciente(pacienteEditar[0])
+  }
+
+  const pacienteEliminar = id => {
+      Alert.alert(
+        '¿Do you want to delete this patient?',
+        'You can not recover a deleted patient',
+        [
+          { text: 'Cancel' },
+          { text: 'Yes, Detele', onPress: () => {
+              const pacientesActualizados = pacientes.filter( pacientesState => pacientesState.id !== id )
+              setPacientes(pacientesActualizados)
+          }}
+        ]
+      )
+  }
+
+  const cerrarModal = () => {
+    setModalVisible(false)
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.titulo}>Appointments Management {''} </Text>
-      <Text style={styles.tituloBold}>Veterinary</Text>
-    <Pressable onPress={newAppointmentHandler} style={styles.btnNewAppointment}>
-      <Text style={styles.btnNewAppointmentText}>New Appointment</Text>
-    </Pressable>
-    <Formulario modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      <Text style={styles.titulo}>Appointments Management {''}
+        <Text style={styles.tituloBold}>Veterinary</Text>
+      </Text>
+
+      <Pressable
+        style={styles.btnNuevaCita}
+        onPress={() => setModalVisible(!modalVisible)}
+      >
+        <Text
+          style={styles.btnTextoNuevaCita}
+        >New Appointment</Text>
+      </Pressable>
+
+      {pacientes.length === 0 ? 
+          <Text style={styles.noPacientes}>There are no patients</Text> :
+          <FlatList
+            style={styles.listado}
+            data={pacientes}
+            keyExtractor={(item) => item.id}
+            renderItem={({item}) => {
+              return(
+                  <Paciente 
+                    item={item}
+                    setModalVisible={setModalVisible}
+                    setPaciente={setPaciente}
+                    pacienteEditar={pacienteEditar}
+                    pacienteEliminar={pacienteEliminar}
+                    setModalPaciente={setModalPaciente}
+                  />
+              )
+            }}
+          />
+      }
+
+  
+      {modalVisible && (
+          <Formulario 
+            cerrarModal={cerrarModal}
+              pacientes={pacientes}
+              setPacientes={setPacientes}
+              paciente={paciente}
+              setPaciente={setPaciente}
+          />
+      )}
+ 
+      <Modal
+        visible={modalPaciente}
+        animationType='slide'
+      >
+        <InformacionPaciente 
+          paciente={paciente}
+          setPaciente={setPaciente}
+          setModalPaciente={setModalPaciente}
+        />
+      </Modal>
 
     </SafeAreaView>
   );
 };
 
-const styles=StyleSheet.create({
-  titulo:{
-    textAlign:'center',
-    fontSize:30,
-    color:'#374151',
-    fontWeight:'600'
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#F3F4F6',
+    flex: 1
   },
-  tituloBold:{
-    textAlign:'center',
+  titulo: {
+      textAlign: 'center',
+      fontSize: 30,
+      color: '#374151',
+      fontWeight: '600'
+  },
+  tituloBold: {
     fontWeight: '900',
-    color:'#6D28D9'
+    color: '#6D28D9',
   },
-  container:{
-    backgroundColor:'#F3F4F6',
-    flex:1
+  btnNuevaCita: {
+    backgroundColor: '#6D28D9',
+    padding: 15,
+    marginTop: 30,
+    marginHorizontal: 20,
+    borderRadius: 10
   },
-  btnNewAppointment:{
-    backgroundColor:'#6D28D9',
-    padding:15,
-    marginTop:30,
-    marginHorizontal:20,
-    borderRadius:10
-
+  btnTextoNuevaCita: {
+    textAlign: 'center',
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '900',
+    textTransform: 'uppercase'
   },
-  btnNewAppointmentText:{
-    textAlign:'center',
-    color:'#FFF',
-    fontSize:20,
-    fontWeight:'900',
-    textTransform:'uppercase'
+  noPacientes: {
+    marginTop: 40,
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: '600'
+  },
+  listado: {
+    marginTop: 50,
+    marginHorizontal: 30
   }
 })
 
